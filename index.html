@@ -1,199 +1,503 @@
-:root {
-  --primary: #8A2BE2; /* بنفسجي */
-  --secondary: #FFFFFF; /* أبيض */
-  --accent: #FF0000; /* أحمر مميز */
-  --text: #333333; /* نصوص داكنة */
-}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAD TOP UP - شحن الألعاب</title>
+    <style>
+        :root {
+            --primary: #8A2BE2; /* بنفسجي */
+            --secondary: #FFFFFF; /* أبيض */
+            --accent: #FF0000; /* أحمر مميز */
+            --text: #333333; /* نصوص داكنة */
+            --dark-bg: #1A1A1A;
+            --dark-text: #E0E0E0;
+        }
 
-body {
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-}
-// roles.js
-const ROLES = {
-  ADMIN: 'admin',
-  AGENT: 'agent',
-  USER: 'user'
-};
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--secondary);
+            color: var(--text);
+            transition: all 0.3s;
+        }
 
-// Middleware التحقق من الصلاحيات
-const checkRole = (roles) => (req, res, next) => {
-  if (roles.includes(req.user.role)) return next();
-  return res.status(403).json({ message: 'غير مسموح بالوصول' });
-};
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
 
-// تسجيل المسؤول
-UserModel.findOne({ email: 'ai8204698@gmail.com' })
-  .then(user => {
-    if (!user) {
-      UserModel.create({
-        username: 'admin',
-        email: 'ai8204698@gmail.com',
-        password: bcrypt.hashSync('nobodyknow', 10),
-        role: ROLES.ADMIN,
-        walletBalance: 0
-      });
-    }
-  });
-  function LoginPage() {
-  // دالة تسجيل الدخول مع التحقق من CAPTCHA بعد 3 محاولات
-  // دعم الوضع الليلي باستخدام Context API
-  return (
-    <div className="bg-purple-100 min-h-screen flex items-center">
-      <div className="bg-white w-96 mx-auto p-8 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold text-purple-800 mb-6">تسجيل الدخول</h2>
-        <form>
-          <input 
-            type="text" 
-            placeholder="اسم المستخدم/المحفظة"
-            className="w-full p-3 mb-4 border rounded"
-          />
-          <input 
-            type="password" 
-            placeholder="كلمة المرور"
-            className="w-full p-3 mb-4 border rounded"
-          />
-          <button className="w-full bg-purple-700 text-white p-3 rounded hover:bg-purple-800">
-            تسجيل الدخول
-          </button>
-          <a href="#" className="block text-red-500 mt-4 text-center">
-            نسيت كلمة المرور؟
-          </a>
-        </form>
-      </div>
-    </div>
-  );
-}
-function Navbar() {
-  return (
-    <header className="bg-purple-800 text-white p-4 flex justify-between items-center">
-      <div className="flex items-center">
-        <Logo className="h-10" />
-        <h1 className="text-xl font-bold mr-2">BAD TOP UP</h1>
-      </div>
-      
-      <div className="flex items-center">
-        <WalletBalance balance={user.walletBalance} />
-        <DarkModeToggle />
-        <CartIcon count={cartItems.length} />
-        <LogoutButton />
-      </div>
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: var(--secondary);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1rem;
+        }
+
+        nav a {
+            color: var(--secondary);
+            text-decoration: none;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--secondary);
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            color: var(--secondary);
+        }
+
+        .login-form {
+            max-width: 400px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: var(--secondary);
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .product-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #ddd;
+            padding: 1rem 0;
+        }
+
+        .admin-panel {
+            background-color: #f5f5f5;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .dark-mode .admin-panel {
+            background-color: #333;
+        }
+
+        .wallet-info {
+            background-color: #f0f0f0;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .dark-mode .wallet-info {
+            background-color: #444;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 0.5rem;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">BAD <span>TOP UP</span></div>
+        <nav>
+            <ul>
+                <li><a href="#" onclick="showPage('home')">الرئيسية</a></li>
+                <li><a href="#" onclick="showPage('products')">المنتجات</a></li>
+                <li><a href="#" onclick="showPage('wallet')">المحفظة</a></li>
+                <li><a href="#" onclick="showPage('orders')">طلباتي</a></li>
+                <li><a href="#" onclick="showPage('admin')">لوحة التحكم</a></li>
+                <li><button class="btn btn-accent" onclick="toggleDarkMode()">وضع ليلي</button></li>
+                <li><button class="btn btn-primary" onclick="logout()">تسجيل الخروج</button></li>
+            </ul>
+        </nav>
     </header>
-  );
-}
-          // server.js
-const securityMiddleware = [
-  helmet(), // حماية رؤوس HTTP
-  rateLimit({ // حماية من هجمات Brute Force
-    windowMs: 15 * 60 * 1000,
-    max: 100
-  }),
-  express.json(),
-  cors()
-];
 
-app.use(securityMiddleware);
+    <div class="container">
+        <!-- صفحة تسجيل الدخول -->
+        <div id="login-page">
+            <div class="login-form">
+                <h2>تسجيل الدخول</h2>
+                <div id="login-error" style="color: var(--accent); display: none;"></div>
+                <input type="text" id="username" placeholder="اسم المستخدم/المحفظة">
+                <input type="password" id="password" placeholder="كلمة المرور">
+                <button class="btn btn-primary" onclick="login()">تسجيل الدخول</button>
+                <p><a href="#" style="color: var(--accent);">نسيت كلمة المرور؟</a></p>
+            </div>
+        </div>
 
-// تسجيل الأحداث الحساسة
-function logSecurityEvent(userId, action) {
-  SecurityLog.create({
-    user: userId,
-    action,
-    timestamp: new Date()
-  });
-}
-          function ProductsPage() {
-  // فلترة المنتجات حسب السعر/الفئة/الشعبية
-  return (
-    <div className="container mx-auto p-4">
-      <SearchBar />
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {products.map(product => (
-          <ProductCard 
-            key={product.id}
-            product={product}
-            onAddToCart={addToCart}
-          />
-        ))}
-      </div>
+        <!-- الصفحة الرئيسية -->
+        <div id="home-page" class="hidden">
+            <h2>مرحباً بك في BAD TOP UP</h2>
+            <div class="wallet-info">
+                <h3>رصيد المحفظة: <span id="wallet-balance">0</span> كوين</h3>
+            </div>
+
+            <div class="promo-section">
+                <h3>العروض الخاصة</h3>
+                <div class="product-grid">
+                    <div class="product-card">
+                        <h4>جواهر فري فاير</h4>
+                        <p>1000 جواهر - 50 كوين</p>
+                        <button class="btn btn-primary">أضف للسلة</button>
+                    </div>
+                    <div class="product-card">
+                        <h4>عضوية ببجي</h4>
+                        <p>عضوية شهر - 30 كوين</p>
+                        <button class="btn btn-primary">أضف للسلة</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- صفحة المنتجات -->
+        <div id="products-page" class="hidden">
+            <h2>المنتجات</h2>
+            <input type="text" placeholder="ابحث عن منتج..." style="width: 100%; padding: 0.5rem; margin-bottom: 1rem;">
+
+            <div class="product-grid">
+                <div class="product-card">
+                    <h4>جواهر فري فاير</h4>
+                    <p>100 جواهر - 5 كوين</p>
+                    <button class="btn btn-primary">أضف للسلة</button>
+                </div>
+                <div class="product-card">
+                    <h4>جواهر فري فاير</h4>
+                    <p>500 جواهر - 25 كوين</p>
+                    <button class="btn btn-primary">أضف للسلة</button>
+                </div>
+                <div class="product-card">
+                    <h4>جواهر فري فاير</h4>
+                    <p>1000 جواهر - 50 كوين</p>
+                    <button class="btn btn-primary">أضف للسلة</button>
+                </div>
+                <div class="product-card">
+                    <h4>عضويات ببجي</h4>
+                    <p>عضوية أسبوع - 10 كوين</p>
+                    <button class="btn btn-primary">أضف للسلة</button>
+                </div>
+                <div class="product-card">
+                    <h4>عضويات ببجي</h4>
+                    <p>عضوية شهر - 30 كوين</p>
+                    <button class="btn btn-primary">أضف للسلة</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- صفحة المحفظة -->
+        <div id="wallet-page" class="hidden">
+            <h2>المحفظة الداخلية</h2>
+            <div class="wallet-info">
+                <h3>الرصيد الحالي: <span id="current-balance">0</span> كوين</h3>
+                <p>1 دولار = 10 كوين</p>
+            </div>
+
+            <h3>الوكلاء المعتمدون</h3>
+            <table>
+                <tr>
+                    <th>اسم الوكيل</th>
+                    <th>طريقة الاتصال</th>
+                    <th>ساعات العمل</th>
+                </tr>
+                <tr>
+                    <td>محمد أحمد</td>
+                    <td>واتساب: 0123456789</td>
+                    <td>10 ص - 10 م</td>
+                </tr>
+                <tr>
+                    <td>علي محمود</td>
+                    <td>تلجرام: @agent1</td>
+                    <td>24 ساعة</td>
+                </tr>
+            </table>
+
+            <h3>حركات المحفظة</h3>
+            <table>
+                <tr>
+                    <th>التاريخ</th>
+                    <th>النوع</th>
+                    <th>المبلغ</th>
+                    <th>الرصيد</th>
+                </tr>
+                <tr>
+                    <td>01/01/2023</td>
+                    <td>شحن</td>
+                    <td>+100 كوين</td>
+                    <td>100 كوين</td>
+                </tr>
+                <tr>
+                    <td>02/01/2023</td>
+                    <td>شراء</td>
+                    <td>-50 كوين</td>
+                    <td>50 كوين</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- صفحة الطلبات -->
+        <div id="orders-page" class="hidden">
+            <h2>سجل الطلبات</h2>
+            <table>
+                <tr>
+                    <th>رقم الطلب</th>
+                    <th>التاريخ</th>
+                    <th>المنتج</th>
+                    <th>الكمية</th>
+                    <th>المبلغ</th>
+                    <th>الحالة</th>
+                </tr>
+                <tr>
+                    <td>ORD-1001</td>
+                    <td>01/01/2023</td>
+                    <td>جواهر فري فاير</td>
+                    <td>1000</td>
+                    <td>50 كوين</td>
+                    <td>مكتمل</td>
+                </tr>
+                <tr>
+                    <td>ORD-1002</td>
+                    <td>02/01/2023</td>
+                    <td>عضوية ببجي</td>
+                    <td>1</td>
+                    <td>30 كوين</td>
+                    <td>قيد التنفيذ</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- لوحة التحكم الإدارية -->
+        <div id="admin-page" class="hidden">
+            <h2>لوحة التحكم الإدارية</h2>
+            <div class="admin-panel">
+                <h3>إحصائيات سريعة</h3>
+                <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                    <div style="flex: 1; background-color: var(--primary); color: white; padding: 1rem; border-radius: 4px;">
+                        <h4>إجمالي المبيعات</h4>
+                        <p>500 كوين</p>
+                    </div>
+                    <div style="flex: 1; background-color: var(--primary); color: white; padding: 1rem; border-radius: 4px;">
+                        <h4>العملاء</h4>
+                        <p>50</p>
+                    </div>
+                    <div style="flex: 1; background-color: var(--primary); color: white; padding: 1rem; border-radius: 4px;">
+                        <h4>الوكلاء</h4>
+                        <p>5</p>
+                    </div>
+                </div>
+
+                <h3>إدارة المنتجات</h3>
+                <button class="btn btn-primary">إضافة منتج جديد</button>
+                <table style="margin-top: 1rem;">
+                    <tr>
+                        <th>اسم المنتج</th>
+                        <th>السعر</th>
+                        <th>الفئة</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                    <tr>
+                        <td>جواهر فري فاير 100</td>
+                        <td>5 كوين</td>
+                        <td>فري فاير</td>
+                        <td>
+                            <button class="btn btn-primary" style="padding: 0.2rem 0.5rem;">تعديل</button>
+                            <button class="btn btn-accent" style="padding: 0.2rem 0.5rem;">حذف</button>
+                        </td>
+                    </tr>
+                </table>
+
+                <h3 style="margin-top: 2rem;">إدارة المستخدمين</h3>
+                <table>
+                    <tr>
+                        <th>اسم المستخدم</th>
+                        <th>البريد الإلكتروني</th>
+                        <th>الدور</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                    <tr>
+                        <td>admin</td>
+                        <td>ai8204698@gmail.com</td>
+                        <td>مدير</td>
+                        <td>
+                            <button class="btn btn-primary" style="padding: 0.2rem 0.5rem;">تعديل</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
-  );
-}
-          # backup-script.sh
-#!/bin/bash
-DATE=$(date +%Y%m%d)
-mongodump --out /backups/$DATE
-tar -czvf /backups/bad_top_up_$DATE.tar.gz /backups/$DATE
-aws s3 cp /backups/bad_top_up_$DATE.tar.gz s3://backup-bucket/
-          function AdminDashboard() {
-  // بيانات الإحصائيات
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <StatCard 
-        title="إجمالي المبيعات" 
-        value={salesData.total} 
-        icon={<ChartIcon />}
-      />
-      
-      <StatCard 
-        title="العملاء الجدد" 
-        value={salesData.newUsers} 
-        icon={<UserAddIcon />}
-      />
-      
-      <StatCard 
-        title="الأرباح" 
-        value={salesData.profit} 
-        icon={<CurrencyIcon />}
-      />
-      
-      <div className="col-span-3">
-        <SalesChart data={salesData.chart} />
-      </div>
-    </div>
-  );
-}
-        // wallet.controller.js
-const transferFunds = async (req, res) => {
-  // التحقق من الرصيد الكافي
-  if (sender.balance < amount) {
-    return res.status(400).json({ message: 'رصيد غير كافي' });
-  }
 
-  // تنفيذ التحويل
-  await WalletTransaction.create([
-    { 
-      user: senderId, 
-      amount: -amount, 
-      type: 'transfer' 
-    },
-    { 
-      user: recipientId, 
-      amount, 
-      type: 'receive' 
-    }
-  ]);
+    <script>
+        // بيانات التطبيق
+        const appData = {
+            currentUser: null,
+            users: [
+                {
+                    username: "admin",
+                    email: "ai8204698@gmail.com",
+                    password: "nobodyknow",
+                    role: "admin",
+                    walletBalance: 1000
+                },
+                {
+                    username: "agent1",
+                    email: "agent@example.com",
+                    password: "agent123",
+                    role: "agent",
+                    walletBalance: 500
+                },
+                {
+                    username: "user1",
+                    email: "user@example.com",
+                    password: "user123",
+                    role: "user",
+                    walletBalance: 100
+                }
+            ],
+            products: [
+                { id: 1, name: "جواهر فري فاير 100", price: 5, category: "فري فاير" },
+                { id: 2, name: "جواهر فري فاير 500", price: 25, category: "فري فاير" },
+                { id: 3, name: "جواهر فري فاير 1000", price: 50, category: "فري فاير" },
+                { id: 4, name: "عضوية ببجي أسبوع", price: 10, category: "ببجي" },
+                { id: 5, name: "عضوية ببجي شهر", price: 30, category: "ببجي" }
+            ],
+            orders: [
+                { id: "ORD-1001", date: "01/01/2023", product: "جواهر فري فاير 1000", quantity: 1, amount: 50, status: "مكتمل" },
+                { id: "ORD-1002", date: "02/01/2023", product: "عضوية ببجي شهر", quantity: 1, amount: 30, status: "قيد التنفيذ" }
+            ]
+        };
 
-  // تحديث أرصدة المستخدمين
-  await User.updateOne(
-    { _id: senderId },
-    { $inc: { walletBalance: -amount } }
-  );
-  
-  await User.updateOne(
-    { _id: recipientId },
-    { $inc: { walletBalance: amount } }
-  );
-};
-    function AgentSettings() {
-  return (
-    <div className="bg-white p-6 rounded-lg shadow">
-      <h3 className="text-lg font-semibold mb-4">إعدادات الوكلاء</h3>
-      <div className="space-y-4">
-        <Input label="سعر التحويل" defaultValue="1$ = 10 كوين" />
-        <Textarea label="تعليمات الشحن" rows={4} />
-        <Toggle label="تفعيل العمولات" />
-        <Button className="bg-red-600 text-white">حفظ التعديلات</Button>
-      </div>
-    </div>
-  );
-}
+        // تسجيل الدخول
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('login-error');
+
+            const user = appData.users.find(u => 
+                (u.username === username || u.email === username) && u.password === password
+            );
+
+            if (user) {
+                appData.currentUser = user;
+                document.getElementById('login-page').classList.add('hidden');
+                showPage('home');
+                updateWalletBalance();
+            } else {
+                errorElement.textContent = "اسم المستخدم أو كلمة المرور غير صحيحة";
+                errorElement.style.display = 'block';
+            }
+        }
+
+        // تسجيل الخروج
+        function logout() {
+            appData.currentUser = null;
+            document.getElementById('login-page').classList.remove('hidden');
+            ['home-page', 'products-page', 'wallet-page', 'orders-page', 'admin-page'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+        }
+
+        // عرض الصفحة المطلوبة
+        function showPage(pageId) {
+            if (!appData.currentUser) return;
+
+            // إخفاء جميع الصفحات أولاً
+            ['home-page', 'products-page', 'wallet-page', 'orders-page', 'admin-page'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+
+            // التحقق من الصلاحيات
+            if (pageId === 'admin' && appData.currentUser.role !== 'admin') {
+                alert('ليس لديك صلاحية الوصول إلى هذه الصفحة');
+                return;
+            }
+
+            // عرض الصفحة المطلوبة
+            document.getElementById(`${pageId}-page`).classList.remove('hidden');
+        }
+
+        // تحديث رصيد المحفظة
+        function updateWalletBalance() {
+            if (appData.currentUser) {
+                document.getElementById('wallet-balance').textContent = appData.currentUser.walletBalance;
+                document.getElementById('current-balance').textContent = appData.currentUser.walletBalance;
+            }
+        }
+
+        // تبديل الوضع الليلي
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const btn = document.querySelector('button[onclick="toggleDarkMode()"]');
+            if (document.body.classList.contains('dark-mode')) {
+                btn.textContent = 'وضع نهاري';
+            } else {
+                btn.textContent = 'وضع ليلي';
+            }
+        }
+
+        // تسجيل الدخول التلقائي للمسؤول عند تحميل الصفحة (لأغراض العرض)
+        window.onload = function() {
+            document.getElementById('username').value = 'ai8204698@gmail.com';
+            document.getElementById('password').value = 'nobodyknow';
+        };
+    </script>
+</body>
+  </html>
