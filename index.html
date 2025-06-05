@@ -1,0 +1,199 @@
+:root {
+  --primary: #8A2BE2; /* بنفسجي */
+  --secondary: #FFFFFF; /* أبيض */
+  --accent: #FF0000; /* أحمر مميز */
+  --text: #333333; /* نصوص داكنة */
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+// roles.js
+const ROLES = {
+  ADMIN: 'admin',
+  AGENT: 'agent',
+  USER: 'user'
+};
+
+// Middleware التحقق من الصلاحيات
+const checkRole = (roles) => (req, res, next) => {
+  if (roles.includes(req.user.role)) return next();
+  return res.status(403).json({ message: 'غير مسموح بالوصول' });
+};
+
+// تسجيل المسؤول
+UserModel.findOne({ email: 'ai8204698@gmail.com' })
+  .then(user => {
+    if (!user) {
+      UserModel.create({
+        username: 'admin',
+        email: 'ai8204698@gmail.com',
+        password: bcrypt.hashSync('nobodyknow', 10),
+        role: ROLES.ADMIN,
+        walletBalance: 0
+      });
+    }
+  });
+  function LoginPage() {
+  // دالة تسجيل الدخول مع التحقق من CAPTCHA بعد 3 محاولات
+  // دعم الوضع الليلي باستخدام Context API
+  return (
+    <div className="bg-purple-100 min-h-screen flex items-center">
+      <div className="bg-white w-96 mx-auto p-8 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold text-purple-800 mb-6">تسجيل الدخول</h2>
+        <form>
+          <input 
+            type="text" 
+            placeholder="اسم المستخدم/المحفظة"
+            className="w-full p-3 mb-4 border rounded"
+          />
+          <input 
+            type="password" 
+            placeholder="كلمة المرور"
+            className="w-full p-3 mb-4 border rounded"
+          />
+          <button className="w-full bg-purple-700 text-white p-3 rounded hover:bg-purple-800">
+            تسجيل الدخول
+          </button>
+          <a href="#" className="block text-red-500 mt-4 text-center">
+            نسيت كلمة المرور؟
+          </a>
+        </form>
+      </div>
+    </div>
+  );
+}
+function Navbar() {
+  return (
+    <header className="bg-purple-800 text-white p-4 flex justify-between items-center">
+      <div className="flex items-center">
+        <Logo className="h-10" />
+        <h1 className="text-xl font-bold mr-2">BAD TOP UP</h1>
+      </div>
+      
+      <div className="flex items-center">
+        <WalletBalance balance={user.walletBalance} />
+        <DarkModeToggle />
+        <CartIcon count={cartItems.length} />
+        <LogoutButton />
+      </div>
+    </header>
+  );
+}
+          // server.js
+const securityMiddleware = [
+  helmet(), // حماية رؤوس HTTP
+  rateLimit({ // حماية من هجمات Brute Force
+    windowMs: 15 * 60 * 1000,
+    max: 100
+  }),
+  express.json(),
+  cors()
+];
+
+app.use(securityMiddleware);
+
+// تسجيل الأحداث الحساسة
+function logSecurityEvent(userId, action) {
+  SecurityLog.create({
+    user: userId,
+    action,
+    timestamp: new Date()
+  });
+}
+          function ProductsPage() {
+  // فلترة المنتجات حسب السعر/الفئة/الشعبية
+  return (
+    <div className="container mx-auto p-4">
+      <SearchBar />
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {products.map(product => (
+          <ProductCard 
+            key={product.id}
+            product={product}
+            onAddToCart={addToCart}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+          # backup-script.sh
+#!/bin/bash
+DATE=$(date +%Y%m%d)
+mongodump --out /backups/$DATE
+tar -czvf /backups/bad_top_up_$DATE.tar.gz /backups/$DATE
+aws s3 cp /backups/bad_top_up_$DATE.tar.gz s3://backup-bucket/
+          function AdminDashboard() {
+  // بيانات الإحصائيات
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <StatCard 
+        title="إجمالي المبيعات" 
+        value={salesData.total} 
+        icon={<ChartIcon />}
+      />
+      
+      <StatCard 
+        title="العملاء الجدد" 
+        value={salesData.newUsers} 
+        icon={<UserAddIcon />}
+      />
+      
+      <StatCard 
+        title="الأرباح" 
+        value={salesData.profit} 
+        icon={<CurrencyIcon />}
+      />
+      
+      <div className="col-span-3">
+        <SalesChart data={salesData.chart} />
+      </div>
+    </div>
+  );
+}
+        // wallet.controller.js
+const transferFunds = async (req, res) => {
+  // التحقق من الرصيد الكافي
+  if (sender.balance < amount) {
+    return res.status(400).json({ message: 'رصيد غير كافي' });
+  }
+
+  // تنفيذ التحويل
+  await WalletTransaction.create([
+    { 
+      user: senderId, 
+      amount: -amount, 
+      type: 'transfer' 
+    },
+    { 
+      user: recipientId, 
+      amount, 
+      type: 'receive' 
+    }
+  ]);
+
+  // تحديث أرصدة المستخدمين
+  await User.updateOne(
+    { _id: senderId },
+    { $inc: { walletBalance: -amount } }
+  );
+  
+  await User.updateOne(
+    { _id: recipientId },
+    { $inc: { walletBalance: amount } }
+  );
+};
+    function AgentSettings() {
+  return (
+    <div className="bg-white p-6 rounded-lg shadow">
+      <h3 className="text-lg font-semibold mb-4">إعدادات الوكلاء</h3>
+      <div className="space-y-4">
+        <Input label="سعر التحويل" defaultValue="1$ = 10 كوين" />
+        <Textarea label="تعليمات الشحن" rows={4} />
+        <Toggle label="تفعيل العمولات" />
+        <Button className="bg-red-600 text-white">حفظ التعديلات</Button>
+      </div>
+    </div>
+  );
+}
